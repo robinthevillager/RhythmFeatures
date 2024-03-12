@@ -26,12 +26,12 @@ class FeatureProcessor:
         self.time_signature = [4, 4]
 
         # Rhythm Features
-        self.onset_strengths: np.ndarray
-        self.onset_times: np.ndarray
-        self.downbeat_times: np.ndarray
-        self.note_times: np.ndarray
-        self.beat_times: np.ndarray
-        self.tempo_bpm: int
+        self.onset_strength: np.ndarray = None
+        self.onset_times: np.ndarray = None
+        self.downbeat_times: np.ndarray = None
+        self.note_times: np.ndarray = None
+        self.beat_times: np.ndarray = None
+        self.tempo_bpm: int = None
 
     def extract_rhythm_features(self):
         """ Extract Rhythm Features from Audio Data"""
@@ -49,7 +49,7 @@ class FeatureProcessor:
         # Derive Tempo in BPM
         # TODO: Whole Process Should be Done Bar by Bar not for the whole file
         average_bar_time = np.average(np.diff(self.downbeat_times))
-        average_beat_time = average_bar_time/4
+        average_beat_time = average_bar_time/2
         self.tempo_bpm = int(60 / average_beat_time)
 
         # ---- Collect Features ----
@@ -147,7 +147,7 @@ class FeatureProcessor:
                     "onset_times": list(self.onset_times),
                     "onset_strength": list(self.onset_strength)
                     }
-        # Collect Data
+
         return features
 
     def _onset_strength_madmom(self, onset_times: np.ndarray):
