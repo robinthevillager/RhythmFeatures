@@ -33,9 +33,9 @@ def main():
         # ---- Extraction ----
         features_proc = FeatureProcessor(base_path, file_name)
         features = features_proc.extract_rhythm_features()
-        features_proc.write_rhythm_features_plot(output_dir)
 
-        # ---- Save Data ----
+        # ---- Write Data ----
+        features_proc.write_rhythm_feature_plots_sonifications(output_dir)
         u.write_json(features, file_name, output_dir)
 
     print("Preprocessing Complete")
