@@ -2,7 +2,10 @@ import numpy as np
 from scipy.signal import get_window
 import librosa
 
+""" DSP Functions for Rhythm Feature Extraction """
+
 DB_RANGE = 80.0
+eps = np.finfo(float).eps
 
 
 def load_audio_data(path, fs=44100):
@@ -98,7 +101,7 @@ def compute_loudness(audio, sample_rate=44100):
 
     # Perceptual weighting.
     frequencies = librosa.fft_frequencies(sr=sample_rate, n_fft=audio.size)
-    a_weighting = librosa.A_weighting(frequencies)
+    a_weighting = librosa.A_weighting(frequencies + eps)
 
     # Perform weighting in linear scale, a_weighting given in decibels.
     weighting = 10**(a_weighting/10)

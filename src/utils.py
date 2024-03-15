@@ -75,13 +75,13 @@ def create_output_directories(file_name):
     return output_path
 
 
-def write_json(data, file_name, path: str):
+def write_json(path: str, data: dict, file_name: str):
     """
     Write Data to JSON File
     Args:
+        path (str): Path to File
         data (dict): Data to Write
         file_name (str): File Name
-        path (str): Path to File
     """
     # Define Output Path
     output_path = f'{path}/{file_name.split(".")[0]}.json'
@@ -89,3 +89,11 @@ def write_json(data, file_name, path: str):
     # Write Data to JSON
     with open(output_path, 'w') as f:
         json.dump(data, f, indent=4)
+
+
+def write_midi(path: str, midi_obj: object, file_name: str):
+    """ Write Midi Object to Directory """
+    from midi_functions import write_midi_file
+    # Define Output Path
+    output_path = f'{path}/{file_name.split(".")[0]}.mid'
+    write_midi_file(output_path, midi_obj)

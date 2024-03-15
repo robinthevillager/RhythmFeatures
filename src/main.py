@@ -1,6 +1,6 @@
+import utils as u
 from featureprocessor import FeatureProcessor
 
-import utils as u
 
 """
 ------------------------------ PREPROCESSING SCRIPT -----------------------------
@@ -32,11 +32,13 @@ def main():
 
         # ---- Extraction ----
         features_proc = FeatureProcessor(base_path, file_name)
-        features = features_proc.extract_rhythm_features()
+        rhythm_features = features_proc.extract_rhythm_features()
+        rhythm_midi = features_proc.construct_midi()
 
         # ---- Write Data ----
-        features_proc.write_rhythm_feature_plots_sonifications(output_dir)
-        u.write_json(features, file_name, output_dir)
+        features_proc.write_analysis_data(output_dir)
+        u.write_midi(output_dir, rhythm_midi, file_name)
+        u.write_json(output_dir, rhythm_features, file_name)
 
     print("Preprocessing Complete")
     exit()
