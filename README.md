@@ -17,7 +17,7 @@ This folder contains the following files:
   - `beat_times` : The beat positions in seconds
   - `microtiming` : The microtiming deviations from the grid in seconds
   - `onset_loudness` : The loudness of the onsets (A-weighted and normalised spectral power of note)
-- `File_Name_onset_sonification.wav` : The original audio file with supoerimposed click-sounds at the onset positions with the corresponding loudness
+- `File_Name_onset_sonification.wav` : The original audio file with superimposed click-sounds at the onset positions with the corresponding loudness
 - `File_Name_rhythm_features.png` : A plot of the extracted rhythm features including the tempo, downbeats, beats, and onset loudnesses
 
 ### How to use:
