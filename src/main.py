@@ -3,12 +3,12 @@ from featureprocessor import FeatureProcessor
 
 
 """
------------------------------- PREPROCESSING SCRIPT -----------------------------
+--------------------------- PREPROCESSING SCRIPT ---------------------------
 
 Author:     Robin Doerfler
 Project:    MIR Course 2024 - Rhythm Style Transfer 
 
------------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 """
 
 
@@ -40,7 +40,7 @@ def main():
         u.write_midi(output_dir, rhythm_midi, file_name)
         u.write_json(output_dir, rhythm_features, file_name)
 
-    print("Preprocessing Complete")
+    print("Preprocessing Complete.")
     exit()
 
 

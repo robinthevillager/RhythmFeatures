@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+""" Plotting Functions """
+
 
 def plot_beats_downbeats(x: np.array(), sr: int, beat_times: list, downbeat_times: list):
     """

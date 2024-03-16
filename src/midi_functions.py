@@ -2,7 +2,7 @@ import music21
 import json
 import numpy as np
 
-""" Rhythm Feature to Midi Conversion """
+""" Rhythm Feature to Midi Conversion Functions """
 
 
 def construct_midi(features):
