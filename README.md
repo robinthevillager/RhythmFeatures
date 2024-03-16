@@ -2,6 +2,45 @@
 #### MIR - Course 2023/2024 - UPF Barcelona - Sound and Music Computing
 #### Authors: Robin Doerfler, Anmol Mishra, Satyajeet Prabhu
 
+### Description:
+This repository contains a feature extraction pipeline for extracting rhythm features from audio files. 
+The extracted features include tempo, downbeats, beats, micro-timings, and onset loudnesses.
+For every file of the dataset, the we create a corresponding folder in the `output` folder.
+This folder contains the following files:
+- 'File_Name.json' : A json file containing the extracted rhythm features
+- 'File_Name.mid' : A midi file containing 
+  - Notes (C3) for every onset position
+  - The velocity of the notes corresponding to the loudness of the onset
+  - The tempo as BPM value in the header of the midi file
+- 'File_Name_onset_sonification.wav' : The original audio file with supoerimposed click-sounds at the onset positions with the corresponding loudness
+- 'File_Name_rhythm_features.png' : A plot of the extracted rhythm features including the tempo, downbeats, beats, and onset loudnesses
+
+The current state of the pipeline assumes a dataset of drumloops which has the following constraints:
+- The audio files are sliced as 'loops' which repeat after an integer number of bars
+- The tempo is annotated in the file name as integer number of beats per minute and is the only number in the file name
+
+
+### How to use:
+1. Clone the repository
+2. Install the required packages using `pip install -r requirements.txt`
+3. Copy the audio files of the dataset into the audiofiles/drumloops folder
+4. Run the `main.py` file using `python main.py`
+5. The extracted features will be saved in the `output` folder
+
+### Structure:
+- `audiofiles` : Contains the audio files of the dataset
+- `output` : Contains the extracted rhythm features for every audio file of the dataset
+- `src` : Contains the source code of the feature extraction pipeline
+  - `main.py` : The main file to run the feature extraction pipeline
+  - `featureprocessor.py` : Contains the main feature processor class
+  - `dsp_functions.py`: Contains supplementary dsp functions
+  - `midi_functions.py` : Contains supplementary midi functions
+  - `plotting_functions.py` : Contains supplementary plotting functions
+  - `utils.py` : Contains various utility functions
+
+
+### Background:
+
 #### Motivation:
 Styles of Latin American (ex.Samba) and African music (ex.Chaabi) have their own unique rhythmic swing that defines their identity. Certain modern genres like Lo-Fi hip hop and artists like J Dilla and Burial incorporate a distinctive swing into their work, creating a dynamic and unique groove with varying amounts of swing and accentuation across different tempos and musical contexts. For musicians and producers, it can be challenging to incorporate these rhythmic signatures, especially when relying on workflows for drum sequence programming based on a quantization grid.
 
