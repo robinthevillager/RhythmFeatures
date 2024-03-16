@@ -4,6 +4,7 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib
 import soundfile as sf
+import plotting_functions as pf
 import dsp_functions as dsp
 import midi_functions as midi
 
@@ -68,37 +69,24 @@ class FeatureProcessor:
         file_name = self.file_name.split(".")[0]
 
         # ---- Plotting ----
-        plt.figure(figsize=(17, 8))
-        plt.plot(self.time, self.audio, label='Audio Signal', color='teal', alpha=0.75)
-        plt.vlines(self.note_times, -1, 1, label=f'{self.beats_per_bar}th Notes', color='dimgray', linestyle='--',
-                   alpha=0.75)
-        plt.vlines(self.beat_times, -1, 1, label=f'{self.time_signature[1]}th Notes', color='dimgray', alpha=0.85,
-                   linewidths=2, linestyle='-')
-        plt.vlines(self.downbeat_times, -1, 1, label='Downbeats', color='black', linewidths=4, linestyle='-')
-        plt.vlines(self.onset_times, -1, 1, label='Onsets', color='red', alpha=0.75, linewidths=1, linestyle='-')
-        plt.plot(self.onset_times, self.onset_loudnesses,
-                 label='Onset Strength',
-                 color='red',
-                 linestyle='None',
-                 marker='o',
-                 markersize=5)
-        plt.title(f"Estimated Rhythm Features: {file_name}")
-        plt.xlabel('Time (sec)')
-        plt.ylabel('Amplitude')
-        plt.legend()
-        plt.tight_layout()
+        fig = pf.create_analysis_plot(self.audio,
+                                      self.time,
+                                      self.note_times,
+                                      self.time_signature,
+                                      self.beats_per_bar,
+                                      self.beat_times,
+                                      self.downbeat_times,
+                                      self.onset_times,
+                                      self.onset_loudnesses,
+                                      file_name)
 
         # Write fig to file
-        plt.savefig(f'{output_path}/{file_name}_rhythm_features.png')
-        plt.close()
-        plt.clf()
+        fig.savefig(f'{output_path}/{file_name}_rhythm_features.png')
+        fig.clf()
 
-        # --- Sonify Onsets ---
+        # --- Onset Sonification ---
         onsets_sonified = self._sonify_onsets()
         sf.write(f'{output_path}/{file_name}_onset_sonification.wav', onsets_sonified, samplerate=self.fs)
-
-        # Write Source Audio to File
-        # sf.write(f'{output_path}/{file_name}.wav', self.audio, samplerate=self.fs)
 
     def _calculate_beats_downbeats(self):
         """ Calculate beat and downbeat times using a simple BPM calculation. """
@@ -232,25 +220,11 @@ class FeatureProcessor:
             micro_timings.append(microtiming_seconds)
             onset_loudnesses.append(onset_loudness)
 
-            # # Plot
-            # plt.plot(audio_segment)
-            # plt.plot(win, color='dimgray', label='Focus Window')
-            # plt.axvline(center_of_mass, color='red', label='Center of Mass')
-            # plt.axvline(spectral_onset, color='blue', label='Spectral Onset')
-            # plt.axvline(offset_left, color='black', label='Current Reference Beat')
-            # plt.plot(dsp.rms_energy(audio_segment, 128), label="RMS Energy")
-            # plt.legend()
-            # plt.tight_layout()
+            # Plot Frame
+            # pf.plot_onset_stats_on_frame(audio_segment, win, center_of_mass, spectral_onset, offset_left)
 
         # Normalise Loudness for file
         onset_loudnesses = dsp.normalise(onset_loudnesses)
-
-        # Plot
-        # plt.plot(self.time, self.audio)
-        # plt.plot(onset_times, onset_loudnesses, 'o', label='Onset Loudness', color='red', alpha=0.75)
-        # plt.vlines(onset_times, -1, 1, label='Onsets', color='red', alpha=0.75, linewidths=1, linestyle='-')
-        # plt.vlines(self.note_times, -1, 1, label='Notes', color='black', alpha=0.75, linewidths=1, linestyle='-')
-        # plt.show()
 
         return onset_times, micro_timings, onset_loudnesses
 
@@ -312,24 +286,6 @@ class FeatureProcessor:
         tempo = proc(self.audio)
         return tempo
 
-    @staticmethod
-    def _timestamps_to_samples(timestamps, sr):
-        """ Convert timestamps to samples.
-
-        Parameters
-        ----------
-        timestamps : np.ndarray
-            Array of time stamps in seconds.
-        sr : int
-            Sampling rate.
-
-        Returns
-        -------
-        samples : np.ndarray
-            Array of sample indices.
-        """
-        return (np.array(timestamps) * sr).astype(int)
-
     def _sonify_onsets(self):
         """ Sonify the onsets of an audio signal.
 
@@ -340,11 +296,11 @@ class FeatureProcessor:
         """
         # Generate Click Sound
         click_length = 0.02  # 20ms
-        click = self._generate_click_sound(click_length=click_length)
+        click = dsp.generate_click_sound(click_length=click_length)
 
         # Create Onset Signal
         onsets = np.zeros_like(self.audio)
-        onset_samples = self._timestamps_to_samples(self.onset_times, self.fs)
+        onset_samples = dsp.timestamps_to_samples(self.onset_times, self.fs)
         for i, onset in enumerate(onset_samples):
             onsets[onset:onset + len(click)] = self.onset_loudnesses[i] * click
 
@@ -354,34 +310,6 @@ class FeatureProcessor:
         sonification = dsp.normalise(sonification)
 
         return sonification
-
-    def _generate_click_sound(self, click_length: float = 0.02):
-        """ Generate a click sound for sonification.
-
-        Parameters
-        ----------
-        click_length : float
-            Length of the click sound in seconds.
-
-        Returns
-        -------
-        click : np.ndarray
-            Array of audio samples of the click sound.
-        """
-        # Generate Click Sound
-        click_samps = int(click_length * self.fs)
-        envelope = np.hanning(click_samps * 2)[click_samps:]
-        noise = np.random.uniform(-1, 1, click_samps)
-        ping = (2 * np.sin(2 * np.pi * 880 * np.arange(click_samps) / self.fs)
-                + 1 * np.sin(2 * np.pi * 1760 * np.arange(click_samps) / self.fs)
-                + 0.808 * np.sin(2 * np.pi * 2640 * np.arange(click_samps) / self.fs)
-                + 0.707 * np.sin(2 * np.pi * 3520 * np.arange(click_samps) / self.fs))
-
-        # Combine Noise and Ping
-        click = noise * envelope ** 2 + ping * envelope ** 0.25
-        click = dsp.normalise(click)
-
-        return click
 
 
 if __name__ == '__main__':

@@ -85,8 +85,6 @@ def compute_loudness(audio, sample_rate=44100):
     Parameters:
         audio: 1D np.array of audio samples.
         sample_rate: Sample rate in Hz.
-        range_db: Dynamic range of loudness in decibels.
-        ref_db: Reference level in decibels.
 
     Returns:
         Loudness in decibels. Shape [batch_size, n_frames] or [n_frames,].
@@ -112,7 +110,7 @@ def compute_loudness(audio, sample_rate=44100):
     return loudness
 
 
-def spectral_novelty(audio):
+def spectral_novelty(audio: np.ndarray) -> np.ndarray:
     """ Spectral Novelty Function"""
     # Compute Spectrogram
     S = np.abs(librosa.stft(audio, n_fft=128, hop_length=64))
@@ -137,7 +135,7 @@ def rms_energy(x: np.ndarray, win: int) -> np.ndarray:
     return np.sqrt(np.convolve(x**2, np.ones(win) / win, mode='same'))
 
 
-def conv_smoothing(x: np.ndarray, M: int, win='hann'):
+def conv_smoothing(x: np.ndarray, M: int, win='hann') -> np.ndarray:
     """ Smoothing Function using Convolution"""
     w = get_window(win, M)
     if len(x.shape) > 1:
@@ -145,3 +143,54 @@ def conv_smoothing(x: np.ndarray, M: int, win='hann'):
     else:
         y = np.convolve(x, w / sum(w), mode='same')
     return y
+
+
+def timestamps_to_samples(timestamps, sr):
+    """ Convert timestamps to samples.
+
+    Parameters
+    ----------
+    timestamps : np.ndarray
+        Array of time stamps in seconds.
+    sr : int
+        Sampling rate.
+
+    Returns
+    -------
+    samples : np.ndarray
+        Array of sample indices.
+    """
+    return (np.array(timestamps) * sr).astype(int)
+
+
+def generate_click_sound(click_length: float = 0.02, fs: int = 44100) -> np.ndarray:
+    """ Generate a click sound for sonification.
+
+    Parameters
+    ----------
+    click_length : float
+        Length of the click sound in seconds.
+    fs : int
+        Sampling rate.
+
+    Returns
+    -------
+    click : np.ndarray
+        Array of audio samples of the click sound.
+
+    """
+    # Generate Click Sound
+    click_samps = int(click_length * fs)
+    envelope = np.hanning(click_samps * 2)[click_samps:]
+    noise = np.random.uniform(-1, 1, click_samps)
+    ping = (2 * np.sin(2 * np.pi * 880 * np.arange(click_samps) / fs)
+            + 1 * np.sin(2 * np.pi * 1760 * np.arange(click_samps) / fs)
+            + 0.808 * np.sin(2 * np.pi * 2640 * np.arange(click_samps) / fs)
+            + 0.707 * np.sin(2 * np.pi * 3520 * np.arange(click_samps) / fs))
+
+    # Combine Noise and Ping
+    click = noise * envelope ** 2 + ping * envelope ** 0.25
+    click = normalise(click)
+
+    return click
+
