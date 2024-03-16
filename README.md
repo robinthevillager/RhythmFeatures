@@ -1,5 +1,5 @@
 ## Rhythm Feature Extraction Pipeline
-#### MIR - Course 2023/2024 - UPF Barcelona - Sound and Music Computing
+#### MIR - Course 2023/2024 by Martín Rocamora - UPF Barcelona - Sound and Music Computing
 #### Authors: Robin Doerfler, Anmol Mishra, Satyajeet Prabhu
 
 ### Description:
@@ -7,18 +7,18 @@ This repository contains a feature extraction pipeline for extracting rhythm fea
 The extracted features include tempo, downbeats, beats, micro-timings, and onset loudnesses.
 For every file of the dataset, the we create a corresponding folder in the `output` folder.
 This folder contains the following files:
-- 'File_Name.json' : A json file containing the extracted rhythm features
-- 'File_Name.mid' : A midi file containing 
-  - Notes (C3) for every onset position
+- `File_Name.mid` : A midi file containing ... 
+  - Notes (C3) at every onset position
   - The velocity of the notes corresponding to the loudness of the onset
   - The tempo as BPM value in the header of the midi file
-- 'File_Name_onset_sonification.wav' : The original audio file with supoerimposed click-sounds at the onset positions with the corresponding loudness
-- 'File_Name_rhythm_features.png' : A plot of the extracted rhythm features including the tempo, downbeats, beats, and onset loudnesses
-
-The current state of the pipeline assumes a dataset of drumloops which has the following constraints:
-- The audio files are sliced as 'loops' which repeat after an integer number of bars
-- The tempo is annotated in the file name as integer number of beats per minute and is the only number in the file name
-
+- `File_Name.json` : A json file containing the extracted rhythm features as time series
+  - `tempo` : The tempo of the audio file in BPM
+  - `downbeat_times` : The downbeat positions in seconds
+  - `beat_times` : The beat positions in seconds
+  - `microtiming` : The microtiming deviations from the grid in seconds
+  - `onset_loudness` : The loudness of the onsets (A-weighted and normalised spectral power of note)
+- `File_Name_onset_sonification.wav` : The original audio file with supoerimposed click-sounds at the onset positions with the corresponding loudness
+- `File_Name_rhythm_features.png` : A plot of the extracted rhythm features including the tempo, downbeats, beats, and onset loudnesses
 
 ### How to use:
 1. Clone the repository
@@ -26,6 +26,7 @@ The current state of the pipeline assumes a dataset of drumloops which has the f
 3. Copy the audio files of the dataset into the audiofiles/drumloops folder
 4. Run the `main.py` file using `python main.py`
 5. The extracted features will be saved in the `output` folder
+
 
 ### Structure:
 - `audiofiles` : Contains the audio files of the dataset
@@ -37,6 +38,12 @@ The current state of the pipeline assumes a dataset of drumloops which has the f
   - `midi_functions.py` : Contains supplementary midi functions
   - `plotting_functions.py` : Contains supplementary plotting functions
   - `utils.py` : Contains various utility functions
+
+### Remarks:
+
+The current state of the pipeline assumes a dataset of drumloops which has the following constraints:
+- The audio files are sliced as 'loops' which repeat after an integer number of bars
+- The tempo is annotated in the file name as integer number of beats per minute and is the only number in the file name
 
 
 ### Background:
