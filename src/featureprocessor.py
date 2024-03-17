@@ -1,15 +1,11 @@
 import numpy as np
 import madmom
 import re
-import matplotlib.pyplot as plt
-import matplotlib
 import soundfile as sf
 import plotting_functions as pf
 import dsp_functions as dsp
 import midi_functions as midi
 
-matplotlib.use('TkAgg')
-DB_RANGE = 80.0
 
 """ Feature Processor for Rhythm Feature Extraction """
 
@@ -253,13 +249,11 @@ class FeatureProcessor:
         onset_energy = dsp.normalise(audio_rms[[int(i * 100) for i in onset_times]])
         return onset_energy
 
-    def _onset_strength_madmom(self, onset_times: np.ndarray):
+    def _onset_strength_madmom(self, onset_times: np.ndarray) -> np.ndarray:
         """ Compute the onset strength of an audio signal using madmom.
 
         Parameters
         ----------
-        audio : np.ndarray
-            Audio signal.
         onset_times : np.ndarray
             Array of time stamps of the estimated onsets in seconds.
 

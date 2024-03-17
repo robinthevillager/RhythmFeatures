@@ -8,7 +8,7 @@ DB_RANGE = 80.0
 eps = np.finfo(float).eps
 
 
-def load_audio_data(path, fs=44100):
+def load_audio_data(path: str = None, fs: int = 44100) -> (np.ndarray, int):
     """ Load & Prepare Audio Data"""
     # Load Audio Data
     audio_data, fs = librosa.load(path, sr=fs)
@@ -23,7 +23,7 @@ def load_audio_data(path, fs=44100):
     return audio_data, fs
 
 
-def pad_audio(audio: np.ndarray, padding: list = [100, 100]):
+def pad_audio(audio: np.ndarray, padding: list = [100, 100]) -> np.ndarray:
     """ Pad Audio File for better Beat Estimation"""
     return np.pad(audio, padding, mode='constant')
 
@@ -47,7 +47,7 @@ def scale(x: np.ndarray, min_val: float = 0, max_val: float = 1) -> np.ndarray:
     return x
 
 
-def center_of_mass(audio):
+def center_of_mass(audio: np.ndarray) -> float:
     """ Center of Mass Function"""
     # Compute RMS Energy
     rms = rms_energy(audio, 128)**4
@@ -56,30 +56,26 @@ def center_of_mass(audio):
     return com
 
 
-def power_to_db(power, ref_db=0.0, range_db=DB_RANGE):
+def power_to_db(power: float, ref_db: float = 0.0, range_db: float = DB_RANGE) -> float:
     """Converts power from linear scale to decibels."""
-    # Choose library.
-    maximum = np.maximum
-    log_base10 = np.log10
-
     # Convert to decibels.
     pmin = 10**-(range_db / 10.0)
-    power = maximum(pmin, power)
-    db = 10.0 * log_base10(power)
+    power = np.maximum(pmin, power)
+    db = 10.0 * np.log10(power)
 
     # Set dynamic range.
     db -= ref_db
-    db = maximum(db, -range_db)
+    db = np.maximum(db, -range_db)
     return db
 
 
-def amplitude_to_db(amplitude, ref_db=0.0, range_db=DB_RANGE):
+def amplitude_to_db(amplitude: float, ref_db: float = 0.0, range_db: float = DB_RANGE) -> float:
     """Converts amplitude in linear scale to power in decibels."""
     power = amplitude**2.0
     return power_to_db(power, ref_db=ref_db, range_db=range_db)
 
 
-def compute_loudness(audio, sample_rate=44100):
+def compute_loudness(audio: np.ndarray, sample_rate: int = 44100) -> float:
     """Perceptual loudness (weighted power) in dB.
 
     Parameters:
@@ -145,7 +141,7 @@ def conv_smoothing(x: np.ndarray, M: int, win='hann') -> np.ndarray:
     return y
 
 
-def timestamps_to_samples(timestamps, sr):
+def timestamps_to_samples(timestamps: np.ndarray, sr: int = 44100) -> np.ndarray:
     """ Convert timestamps to samples.
 
     Parameters

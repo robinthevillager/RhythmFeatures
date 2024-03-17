@@ -13,14 +13,7 @@ Project:    MIR Course 2024 - Rhythm Style Transfer
 
 
 def main():
-    """
-    ---- Main Process ----
-    Get Path and File
-    Iterate through Files
-        - Load Audio Data
-        - Extract Rhythm Features
-        - Encode Rhythm Features
-    """
+    """ ---- Main Process ---- """
     # Get Path and Files
     base_path, file_names = u.get_base_path()
 
